@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kieswijzer: Expat Dutch Phone Tree & IVR Navigator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            dutchOrange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Custom tactile keycap styling */
+    .keycap-btn {
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: all 0.08s ease;
+    }
+    .keycap-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .keycap-pill {
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+    }
+    /* Smooth scroll & custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.5);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-slate-900/80 border-b border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-dutchOrange-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+          <i class="fa-solid fa-diagram-project text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+              Kieswijzer <span class="text-xs px-2 py-0.5 rounded bg-dutchOrange-500/20 text-dutchOrange-400 font-semibold uppercase tracking-wider border border-dutchOrange-500/30">IVR bypass</span>
+            </h1>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Dutch Phone Tree & Interactive Voice Response Navigator</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="sim-btn-nav" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/30 hover:bg-brand-500/20 transition-all flex items-center gap-2">
+          <i class="fa-solid fa-headset text-sm"></i>
+          <span class="hidden md:inline">Practice Call Simulator</span>
+          <span class="md:hidden">Simulator</span>
+        </button>
+        <button id="submit-tree-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-xs"></i>
+          <span class="hidden sm:inline">Submit Update</span>
+        </button>
+        <button id="theme-toggle" title="Toggle Light/Dark Theme" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center border border-slate-700 transition-colors">
+          <i class="fa-solid fa-sun text-sm" id="theme-icon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-8">
+    
+    <!-- Hero / Quick Context Header -->
+    <section class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800/80 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-500/10 text-brand-300 border border-brand-500/20 mb-3">
+          <i class="fa-solid fa-shield-halved"></i> Zero sensory freeze &bull; Bypass the Dutch voice trees
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
+          Stop getting stuck in Dutch automated phone menus.
+        </h2>
+        <p class="text-sm text-slate-300 leading-relaxed mb-4">
+          Visual branch-by-branch telephone trees, exact phonetic trigger words to interrupt robotic Dutch speech recognition, verified keypad bypass shortcuts, and opening English phrases.
+        </p>
+        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Keypad number sequences</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Phonetic pronunciation</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> 1-click human bypass</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Universal Dutch Voice & Human Bypass Cheat Sheet -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-dutchOrange-500 animate-pulse"></span>
+          <h3 class="text-base font-bold text-white uppercase tracking-wider text-xs sm:text-sm">Universal Voice Trigger & Bypass Cheat Sheet</h3>
+        </div>
+        <span class="text-xs text-slate-400">Click any card to play synthesized audio or copy phrasing</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <!-- Card: Medewerker -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-brand-500/50 rounded-xl p-4 transition-all group flex flex-col justify-between shadow-md">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">#1 Voice Trigger</span>
+              <button onclick="speakDutch('Medewerker')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 hover:text-brand-400 hover:bg-slate-700 flex items-center justify-center transition-colors" title="Listen pronunciation">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+            <div class="text-xl font-bold text-white tracking-tight group-hover:text-brand-400 transition-colors">Medewerker</div>
+            <div class="text-xs font-mono text-dutchOrange-400 mt-0.5">[MAY-duh-wair-ker]</div>
+            <p class="text-xs text-slate-400 mt-2">Bypasses automated branching in almost all Dutch IVR voice systems straight to human operator.</p>
+          </div>
+          <button onclick="copyText('Medewerker', this)" class="mt-3 text-xs w-full py-1.5 bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white rounded-lg border border-slate-700 font-medium transition-colors flex items-center justify-center gap-1.5">
+            <i class="fa-regular fa-copy"></i> Copy Word
+          </button>
+        </div>
+
+        <!-- Card: Spoed -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-red-500/50 rounded-xl p-4 transition-all group flex flex-col justify-between shadow-md">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/30">Immediate Emergency</span>
+              <button onclick="speakDutch('Spoed')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 hover:text-red-400 hover:bg-slate-700 flex items-center justify-center transition-colors" title="Listen pronunciation">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+            <div class="text-xl font-bold text-white tracking-tight group-hover:text-red-400 transition-colors">Spoed / Toets 1</div>
+            <div class="text-xs font-mono text-dutchOrange-400 mt-0.5">[SPOOT]</div>
+            <p class="text-xs text-slate-400 mt-2">Dutch GP & pharmacy lines reserve Option 1 for urgent triage. Never press for routine admin.</p>
+          </div>
+          <button onclick="copyText('Spoed', this)" class="mt-3 text-xs w-full py-1.5 bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white rounded-lg border border-slate-700 font-medium transition-colors flex items-center justify-center gap-1.5">
+            <i class="fa-regular fa-copy"></i> Copy Word
+          </button>
+        </div>
+
+        <!-- Card: Apotheker / Assistent -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-brand-500/50 rounded-xl p-4 transition-all group flex flex-col justify-between shadow-md">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">Pharmacy Counter</span>
+              <button onclick="speakDutch('Apotheker')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 hover:text-brand-400 hover:bg-slate-700 flex items-center justify-center transition-colors" title="Listen pronunciation">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+            <div class="text-xl font-bold text-white tracking-tight group-hover:text-brand-400 transition-colors">Apotheker / Recept</div>
+            <div class="text-xs font-mono text-dutchOrange-400 mt-0.5">[ah-po-TAY-ker / ray-SEPT]</div>
+            <p class="text-xs text-slate-400 mt-2">Routes directly to the dispensary counter instead of the automated repeat-prescription loop.</p>
+          </div>
+          <button onclick="copyText('Apotheker', this)" class="mt-3 text-xs w-full py-1.5 bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white rounded-lg border border-slate-700 font-medium transition-colors flex items-center justify-center gap-1.5">
+            <i class="fa-regular fa-copy"></i> Copy Word
+          </button>
+        </div>
+
+        <!-- Card: Human Opening Line -->
+        <div class="bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 rounded-xl p-4 transition-all group flex flex-col justify-between shadow-md">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">Polite Handshake</span>
+              <button onclick="speakDutch('Spreekt u Engels alstublieft?')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 hover:text-amber-400 hover:bg-slate-700 flex items-center justify-center transition-colors" title="Listen pronunciation">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+            <div class="text-base font-bold text-white tracking-tight group-hover:text-amber-300 transition-colors">Spreekt u Engels?</div>
+            <div class="text-xs font-mono text-dutchOrange-400 mt-0.5">[SPRAYKT oo ENG-uls ahlst-oo-BLEEFT?]</div>
+            <p class="text-xs text-slate-400 mt-2">Say the second a human answers. 98% of Dutch operators switch instantly without irritation.</p>
+          </div>
+          <button onclick="copyText('Goedendag, spreekt u Engels alstublieft?', this)" class="mt-3 text-xs w-full py-1.5 bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white rounded-lg border border-slate-700 font-medium transition-colors flex items-center justify-center gap-1.5">
+            <i class="fa-regular fa-copy"></i> Copy Full Phrase
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Search, Filter, and Organization Controls -->
+    <section class="space-y-4">
+      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="tree-search" placeholder="Search provider (e.g., OHRA, HMC Westeinde, Belastingdienst, Gemeente, KPN)..." 
+                 class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
+          <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-slate-800 text-slate-400 hover:text-white px-2 py-1 rounded">Clear</button>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs no-scrollbar">
+          <button data-cat="all" class="cat-pill active px-3 py-2 rounded-lg font-medium whitespace-nowrap bg-brand-600 text-white transition-colors">All Services</button>
+          <button data-cat="healthcare" class="cat-pill px-3 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">Healthcare & Apotheken</button>
+          <button data-cat="government" class="cat-pill px-3 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">Government & IND</button>
+          <button data-cat="insurance" class="cat-pill px-3 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">Insurance</button>
+          <button data-cat="telecom" class="cat-pill px-3 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">Telecom & Utilities</button>
+          <button data-cat="transport" class="cat-pill px-3 py-2 rounded-lg font-medium whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors">Transport</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Detailed Interactive Phone Trees -->
+    <section>
+      <div id="trees-container" class="space-y-4">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+      <div id="no-results" class="hidden text-center py-12 bg-slate-900/50 rounded-2xl border border-slate-800">
+        <i class="fa-solid fa-phone-slash text-3xl text-slate-600 mb-3"></i>
+        <h4 class="text-base font-semibold text-slate-300">No matching phone tree found</h4>
+        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Try searching for generic terms or submit an update for this company's IVR tree.</p>
+        <button onclick="document.getElementById('submit-tree-btn').click()" class="mt-4 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg text-slate-200 border border-slate-700">Submit this company</button>
+      </div>
+    </section>
+
+    <!-- Section 4: Interactive Dutch Call Simulator / Practice Mode -->
+    <section id="simulator-section" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-headset text-sm"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Interactive Call Practice Simulator</h3>
+            <p class="text-xs text-slate-400">Train your ear on Dutch voice prompts without real-time pressure or consequences</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="sim-score-badge" class="px-2.5 py-1 rounded bg-slate-800 text-xs font-mono text-emerald-400 border border-slate-700">Score: 0 / 0</span>
+          <button id="sim-next-btn" class="px-3 py-1 bg-brand-600 hover:bg-brand-500 text-white rounded text-xs font-semibold transition-all">Next Scenario</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <!-- Scenario Prompt Display -->
+        <div class="lg:col-span-7 bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span id="sim-scenario-title" class="font-bold text-brand-400 uppercase tracking-wider">Scenario: GP Clinic Emergency vs Appointment</span>
+            <span id="sim-provider" class="text-slate-500">Huisartsenpraktijk</span>
+          </div>
+
+          <!-- Spoken Dutch box -->
+          <div class="bg-slate-900/80 p-4 rounded-lg border border-slate-800/80">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
+                <i class="fa-solid fa-volume-high text-brand-400"></i> Spoken Dutch Audio Prompt:
+              </span>
+              <button id="sim-play-audio" class="text-xs bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 px-2 py-0.5 rounded font-medium flex items-center gap-1">
+                <i class="fa-solid fa-play text-[10px]"></i> Play Voice
+              </button>
+            </div>
+            <p id="sim-dutch-text" class="text-sm font-medium text-amber-200/90 leading-relaxed font-mono">
+              "Kies 1 voor spoedgevallen. Kies 2 voor het aanvragen van een herhaalrecept. Kies 3 voor een afspraak of om een medewerker te spreken."
+            </p>
+          </div>
+
+          <!-- English Mission Instruction -->
+          <div class="space-y-1">
+            <span class="text-xs text-slate-400 font-semibold">Your Mission:</span>
+            <p id="sim-goal-text" class="text-sm text-slate-200 font-medium">
+              You need to book a non-urgent intake consultation with the doctor. What do you press?
+            </p>
+          </div>
+
+          <!-- Feedback Status Box -->
+          <div id="sim-feedback" class="min-h-[44px] flex items-center px-3 py-2 rounded-lg text-xs font-medium bg-slate-900/50 text-slate-400 border border-slate-800">
+            Press a button on the telephone keypad below to answer.
+          </div>
+        </div>
+
+        <!-- Interactive Tactile Telephone Keypad -->
+        <div class="lg:col-span-5 flex flex-col items-center">
+          <div class="w-64 bg-slate-950 p-4 rounded-2xl border border-slate-800 shadow-2xl">
+            <div class="grid grid-cols-3 gap-2.5 mb-2.5">
+              <button onclick="handleKeypadPress('1')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">1</span>
+                <span class="text-[9px] text-slate-400 font-normal">.</span>
+              </button>
+              <button onclick="handleKeypadPress('2')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">2</span>
+                <span class="text-[9px] text-slate-400 font-normal">ABC</span>
+              </button>
+              <button onclick="handleKeypadPress('3')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">3</span>
+                <span class="text-[9px] text-slate-400 font-normal">DEF</span>
+              </button>
+              <button onclick="handleKeypadPress('4')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">4</span>
+                <span class="text-[9px] text-slate-400 font-normal">GHI</span>
+              </button>
+              <button onclick="handleKeypadPress('5')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">5</span>
+                <span class="text-[9px] text-slate-400 font-normal">JKL</span>
+              </button>
+              <button onclick="handleKeypadPress('6')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">6</span>
+                <span class="text-[9px] text-slate-400 font-normal">MNO</span>
+              </button>
+              <button onclick="handleKeypadPress('7')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">7</span>
+                <span class="text-[9px] text-slate-400 font-normal">PQRS</span>
+              </button>
+              <button onclick="handleKeypadPress('8')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">8</span>
+                <span class="text-[9px] text-slate-400 font-normal">TUV</span>
+              </button>
+              <button onclick="handleKeypadPress('9')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">9</span>
+                <span class="text-[9px] text-slate-400 font-normal">WXYZ</span>
+              </button>
+              <button onclick="handleKeypadPress('*')" class="keycap-btn h-12 bg-slate-800/60 hover:bg-slate-700 text-slate-300 rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">*</span>
+              </button>
+              <button onclick="handleKeypadPress('0')" class="keycap-btn h-12 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">0</span>
+                <span class="text-[9px] text-slate-400 font-normal">+</span>
+              </button>
+              <button onclick="handleKeypadPress('#')" class="keycap-btn h-12 bg-slate-800/60 hover:bg-slate-700 text-slate-300 rounded-xl font-bold flex flex-col items-center justify-center">
+                <span class="text-base leading-none">#</span>
+              </button>
+            </div>
+            <!-- Shortcut Say Voice button -->
+            <button onclick="handleKeypadPress('VOICE_OVERRIDE')" class="w-full py-2 bg-dutchOrange-500/20 hover:bg-dutchOrange-500/30 border border-dutchOrange-500/40 text-dutchOrange-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+              <i class="fa-solid fa-microphone"></i> Say "Medewerker"
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal: Submit / Propose Phone Tree Update -->
+  <div id="submit-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5 mb-4">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i class="fa-solid fa-file-pen"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">Contribute / Update an IVR Tree</h3>
+          <p class="text-xs text-slate-400">Did a company recently change their menu options?</p>
+        </div>
+      </div>
+
+      <form id="submit-tree-form" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Company / Organization Name</label>
+          <input type="text" id="sub-name" required placeholder="e.g., KPN Klantenservice or Apotheek Transvaal" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:ring-1 focus:ring-brand-500 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Category</label>
+            <select id="sub-cat" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:ring-1 focus:ring-brand-500 outline-none">
+              <option value="healthcare">Healthcare & Apotheken</option>
+              <option value="government">Government & IND</option>
+              <option value="insurance">Insurance</option>
+              <option value="telecom">Telecom & Utilities</option>
+              <option value="transport">Transport</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Phone Number</label>
+            <input type="text" id="sub-phone" placeholder="e.g., 0800-0402" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:ring-1 focus:ring-brand-500 outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Key Steps / Secret Bypass Shortcut</label>
+          <textarea id="sub-steps" rows="3" required placeholder="e.g., Press 1 for Nederlands, then instantly press 3 to reach an English agent without waiting." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:ring-1 focus:ring-brand-500 outline-none"></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" id="cancel-modal-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-paper-plane text-xs"></i> Submit Tree
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-900/40 text-slate-400 py-6 text-xs mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-shield text-brand-400"></i>
+        <span>Built for expats in the Netherlands &bull; Designed to eliminate phone tree freeze.</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-500">
+        <span>Den Haag &bull; Amsterdam &bull; Rotterdam &bull; Utrecht</span>
+        <span>Version 1.4</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-800 border border-slate-700 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+    <span id="toast-message">Copied to clipboard</span>
+  </div>
+
+  <script>
+    /* Complete Database of Dutch Phone Trees */
+    const phoneTrees = [
+      {
+        id: "hmc-lijnbaan",
+        name: "Poliklinische Apotheek HMC Lijnbaan (Westeinde)",
+        category: "healthcare",
+        phone: "070 388 7674",
+        hours: "Mon-Sun: 08:00 - 21:30",
+        address: "Lijnbaan 32, 2512 VA Den Haag",
+        speedShortcut: "Say 'Apotheker' or Press 2 immediately",
+        description: "Acute hospital outpatient pharmacy directly adjacent to HMC Westeinde. Open until 21:30 daily, holds high cold-chain stock for biologics, GLP-1s, and specialty meds.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Toets 1 voor spoedeisende levering of artsenoverleg",
+            english: "Press 1 for emergency deliveries or direct physician consultations",
+            type: "urgent"
+          },
+          {
+            key: "2",
+            dutch: "Toets 2 voor vragen over klaarliggende medicatie en recepten",
+            english: "Press 2 for questions about ready medication and new prescriptions",
+            type: "action",
+            highlight: true,
+            note: "Routes right to dispensing counter assistant. Have your BSN ready."
+          },
+          {
+            key: "3",
+            dutch: "Toets 3 voor herhaalrecepten en openingstijden",
+            english: "Press 3 for repeat prescriptions and operating hours",
+            type: "info"
+          }
+        ],
+        tips: [
+          "Do not stay in the voice loop: clear your throat and firmly say 'Apotheker' if voice prompt is active.",
+          "Open through the weekend until 21:30 unlike standard neighborhood apotheken."
+        ]
+      },
+      {
+        id: "ohra-zorg",
+        name: "OHRA Zorgverzekering (Health Customer Care)",
+        category: "insurance",
+        phone: "026 400 4040",
+        hours: "Mon-Fri: 08:30 - 17:00",
+        speedShortcut: "Press 2, then Press 1 (Avoid billing loop)",
+        description: "Health insurance desk for basisverzekering status, backdated policy activations, and VECOZO registry synchronization.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Toets 1 voor schadeverzekeringen of autoverzekering",
+            english: "Press 1 for non-life insurance (car, home, travel)",
+            type: "redirect"
+          },
+          {
+            key: "2",
+            dutch: "Toets 2 voor uw zorgverzekering",
+            english: "Press 2 for Health Insurance (Zorg)",
+            type: "branch",
+            children: [
+              {
+                key: "1",
+                dutch: "Toets 1 voor een nieuwe polis, acceptatie of inschrijving met terugwerkende kracht",
+                english: "Press 1 for new policy status, acceptance & backdated registrations",
+                type: "action",
+                highlight: true,
+                note: "Fastest route to Underwriting queue. State your BSN and application date."
+              },
+              {
+                key: "2",
+                dutch: "Toets 2 voor declaraties en eigen risico",
+                english: "Press 2 for claims and deductible (eigen risico) questions",
+                type: "info"
+              }
+            ]
+          }
+        ],
+        tips: [
+          "Direct WhatsApp service is staffed 08:30 - 17:00. Always send your 9-digit BSN without dots.",
+          "Ask: 'Kunt u de VECOZO COV-synchronisatie forceren voor de huisarts?'"
+        ]
+      },
+      {
+        id: "belastingdienst",
+        name: "Belastingdienst (Dutch Tax Office)",
+        category: "government",
+        phone: "0800 0543",
+        hours: "Mon-Thu: 08:00 - 20:00, Fri: 08:00 - 17:00",
+        speedShortcut: "Press 1, wait for prompt, say 'Medewerker'",
+        description: "National tax office for BSN queries, income tax (inkomstenbelasting), and 30% ruling inquiries.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Kies 1 voor particulieren (inkomstenbelasting en toeslagen)",
+            english: "Choose 1 for individuals (income taxes and benefits)",
+            type: "branch",
+            children: [
+              {
+                key: "1",
+                dutch: "Kies 1 voor toeslagen (zorgtoeslag, huurtoeslag)",
+                english: "Choose 1 for allowances/toeslagen",
+                type: "info"
+              },
+              {
+                key: "2",
+                dutch: "Kies 2 voor inkomstenbelasting en overige vragen",
+                english: "Choose 2 for income tax and all other general inquiries",
+                type: "action",
+                highlight: true
+              }
+            ]
+          },
+          {
+            key: "2",
+            dutch: "Kies 2 voor ondernemers en zzp'ers",
+            english: "Choose 2 for businesses and freelancers",
+            type: "redirect"
+          }
+        ],
+        tips: [
+          "Free toll-free number from any Dutch mobile (0800).",
+          "Always have your BSN written on a sheet in front of you; the system prompts you to enter it on the keypad or say it in Dutch pairs."
+        ]
+      },
+      {
+        id: "gemeente-denhaag",
+        name: "Gemeente Den Haag (City Hall)",
+        category: "government",
+        phone: "14 070",
+        hours: "Mon-Fri: 08:30 - 17:00",
+        speedShortcut: "Dial 14 070 (no prefix), say 'Afspraak'",
+        description: "The Hague municipal services for BSN appointments, residency registration (BRP), parking permits, and civil affairs.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Kies 1 voor Burgerzaken (verhuizing, paspoort, BSN, uittreksel)",
+            english: "Choose 1 for Civil Affairs (relocation, passport, BSN, extracts)",
+            type: "action",
+            highlight: true,
+            note: "Directly leads to appointment desk."
+          },
+          {
+            key: "2",
+            dutch: "Kies 2 voor Belastingen, parkeren en vergunningen",
+            english: "Choose 2 for Municipal taxes, resident parking permits",
+            type: "info"
+          },
+          {
+            key: "3",
+            dutch: "Kies 3 voor meldingen over de openbare ruimte of afval",
+            english: "Choose 3 for public space complaints or bulky waste pickup",
+            type: "info"
+          }
+        ],
+        tips: [
+          "The number '14 070' is a 5-digit shortcode. Do not dial 070 before 14 070 on Dutch networks.",
+          "If calling from an overseas SIM, dial +31 70 353 3000 instead."
+        ]
+      },
+      {
+        id: "ind-immigratie",
+        name: "IND (Immigratie- en Naturalisatiedienst)",
+        category: "government",
+        phone: "088 043 0430",
+        hours: "Mon-Fri: 09:00 - 17:00",
+        speedShortcut: "Press 2 for English prompt directly",
+        description: "Immigration and Naturalisation Service for residence permits, biometrics appointments, and MVV status.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Voor Nederlands, toets 1",
+            english: "For Dutch, press 1",
+            type: "info"
+          },
+          {
+            key: "2",
+            dutch: "For information in English, press 2",
+            english: "Routes entire phone system to English menu and agents",
+            type: "action",
+            highlight: true,
+            note: "The IND is one of the few Dutch agencies with an official English tree branch."
+          }
+        ],
+        tips: [
+          "Have your V-number (V-nummer) ready. It is the 10-digit number printed on your IND correspondence or verblijfsdocument."
+        ]
+      },
+      {
+        id: "huisarts-standard",
+        name: "Standard Dutch GP Practice (Huisartsenpraktijk)",
+        category: "healthcare",
+        phone: "Practice Local Number",
+        hours: "Mon-Fri: 08:00 - 17:00 (Lunch closed 12:00-13:30)",
+        speedShortcut: "Wait for menu, Press 3 (Afspraken / Medewerker)",
+        description: "Universal standardized phone tree used by 90%+ of Dutch General Practice surgeries (including Nieuw Westeinde).",
+        branches: [
+          {
+            key: "1",
+            dutch: "Toets 1 voor SPOED (levensbedreigende situaties)",
+            english: "Press 1 for EMERGENCY (life-threatening situations)",
+            type: "urgent",
+            note: "Diverts instantly to doctor's emergency line. Never use for admin."
+          },
+          {
+            key: "2",
+            dutch: "Toets 2 voor het inspreken van een herhaalrecept",
+            english: "Press 2 to record a repeat prescription voicemail",
+            type: "info",
+            note: "Automated recording tape; you will NOT get a human on this option."
+          },
+          {
+            key: "3",
+            dutch: "Toets 3 voor het maken van een afspraak of overige vragen",
+            english: "Press 3 to schedule an appointment or speak with the assistant",
+            type: "action",
+            highlight: true,
+            note: "Connects to the Doktersassistente. This is where you book intakes."
+          },
+          {
+            key: "4",
+            dutch: "Toets 4 voor collegiaal overleg (alleen voor zorgverleners)",
+            english: "Press 4 for inter-colleague consultations (healthcare workers only)",
+            type: "redirect"
+          }
+        ],
+        tips: [
+          "Dutch practices frequently turn on answering machines between 10:30-11:00 (koffiepauze) and 12:00-13:30 (lunch). Call at 08:15 or 14:00.",
+          "The receptionist (doktersassistente) is medically trained and performs triage; tell them clearly: 'Continuïteit van medicatie'."
+        ]
+      },
+      {
+        id: "kpn-klantenservice",
+        name: "KPN Klantenservice (Internet & Mobile)",
+        category: "telecom",
+        phone: "0800 0402",
+        hours: "Mon-Fri: 08:00 - 18:00, Sat: 08:00 - 17:00",
+        speedShortcut: "Press 1, then say 'Storing' or 'Medewerker'",
+        description: "Fiber glass internet, 5G mobile, and home network support.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Kies 1 voor particuliere klanten",
+            english: "Choose 1 for residential customers",
+            type: "branch",
+            children: [
+              {
+                key: "1",
+                dutch: "Kies 1 voor internet, tv en vaste telefonie",
+                english: "Choose 1 for Home Internet, TV, and Landline",
+                type: "action",
+                highlight: true
+              },
+              {
+                key: "2",
+                dutch: "Kies 2 voor mobiele abonnementen",
+                english: "Choose 2 for mobile plans",
+                type: "info"
+              }
+            ]
+          },
+          {
+            key: "2",
+            dutch: "Kies 2 voor zakelijke klanten",
+            english: "Choose 2 for business customers",
+            type: "redirect"
+          }
+        ],
+        tips: [
+          "Free 0800 number. If voice assistant asks: 'Waar kan ik u mee helpen?', say 'Storing' (outage) for immediate agent routing."
+        ]
+      },
+      {
+        id: "ns-klantenservice",
+        name: "NS Klantenservice (Dutch Railways)",
+        category: "transport",
+        phone: "030 751 5155",
+        hours: "24/7 Available",
+        speedShortcut: "Say 'Klantenservice medewerker' at prompt",
+        description: "National railway customer support for OV-chipkaart subscriptions, delays, refund claims, and lost items.",
+        branches: [
+          {
+            key: "1",
+            dutch: "Toets 1 voor actuele reisinformatie en vertragingen",
+            english: "Press 1 for live train departure and delay updates",
+            type: "info"
+          },
+          {
+            key: "2",
+            dutch: "Toets 2 voor vragen over uw NS-abonnement of OV-chipkaart",
+            english: "Press 2 for subscriptions, Dal Voordeel, and OV-chipkaart",
+            type: "action",
+            highlight: true
+          },
+          {
+            key: "3",
+            dutch: "Toets 3 voor verloren voorwerpen of geld terug bij vertraging",
+            english: "Press 3 for lost & found or delay refunds (Geld terug bij vertraging)",
+            type: "info"
+          }
+        ],
+        tips: [
+          "NS agents speak flawless English. Press 2 and say 'Spreekt u Engels?' immediately."
+        ]
+      }
+    ];
+
+    /* Practice Simulator Scenarios */
+    const simScenarios = [
+      {
+        title: "GP Surgery Intake & Appointment",
+        provider: "Huisartsenpraktijk Nieuw Westeinde",
+        dutch: "Welkom. Toets 1 voor spoedgevallen. Toets 2 voor het inspreken van een herhaalrecept. Toets 3 voor het maken van een afspraak of overige vragen.",
+        goal: "You need to speak to the receptionist to schedule your non-urgent intake consultation and request a dermatology referral. Which key do you press?",
+        correctKey: "3",
+        explanation: "Correct! Option 3 is for appointments ('afspraak') and connects to the medical assistant. Option 1 is exclusively for life-threatening emergencies, and Option 2 is an automated voicemail recording."
+      },
+      {
+        title: "Emergency vs Standard Care",
+        provider: "Centrale Huisartsenpost (After-Hours)",
+        dutch: "Kies 1 bij een acute, levensbedreigende situatie. Blijf aan de lijn voor overige spoedeisende klachten tijdens de avond- of weekenddienst.",
+        goal: "You have a mild medication inquiry that can wait for office hours. If this was an acute emergency, what would you press?",
+        correctKey: "1",
+        explanation: "Correct! Key 1 ('Spoed') is universal across every medical service in the Netherlands for acute triage."
+      },
+      {
+        title: "Voice-Only System Override",
+        provider: "Telecommunicatie / Support",
+        dutch: "Goedendag. Vertel in een paar woorden waarvoor u belt, zodat wij u kunnen doorverbinden.",
+        goal: "The system has no numerical keypad prompts and is asking you open-ended questions in rapid Dutch. How do you trigger an instant human handoff?",
+        correctKey: "VOICE_OVERRIDE",
+        explanation: "Bingo! Saying 'Medewerker' (or clicking Say Medewerker) immediately triggers the speech recognition fallback to route to an operator."
+      },
+      {
+        title: "Health Insurer Policy Setup",
+        provider: "OHRA Zorg Desk",
+        dutch: "Welkom bij OHRA. Toets 1 voor schade- en autoverzekeringen. Toets 2 voor uw zorgverzekering en polisvragen.",
+        goal: "You need to verify that your backdated basic health insurance application is registered in VECOZO. What do you press?",
+        correctKey: "2",
+        explanation: "Correct! 'Zorgverzekering' means health insurance (Option 2). Option 1 routes to auto and home insurance."
+      }
+    ];
+
+    let currentSimIndex = 0;
+    let simScore = 0;
+    let simTotal = 0;
+
+    // DOM Elements
+    const treesContainer = document.getElementById('trees-container');
+    const searchInput = document.getElementById('tree-search');
+    const clearSearchBtn = document.getElementById('clear-search');
+    const catPills = document.querySelectorAll('.cat-pill');
+    const noResults = document.getElementById('no-results');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+
+    // Simulator Elements
+    const simScenarioTitle = document.getElementById('sim-scenario-title');
+    const simProvider = document.getElementById('sim-provider');
+    const simDutchText = document.getElementById('sim-dutch-text');
+    const simGoalText = document.getElementById('sim-goal-text');
+    const simFeedback = document.getElementById('sim-feedback');
+    const simScoreBadge = document.getElementById('sim-score-badge');
+    const simNextBtn = document.getElementById('sim-next-btn');
+    const simPlayAudio = document.getElementById('sim-play-audio');
+
+    // Modal Elements
+    const submitModal = document.getElementById('submit-modal');
+    const submitTreeBtn = document.getElementById('submit-tree-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cancelModalBtn = document.getElementById('cancel-modal-btn');
+    const submitTreeForm = document.getElementById('submit-tree-form');
+
+    // Render Phone Trees
+    function renderTrees(filterText = '', category = 'all') {
+      treesContainer.innerHTML = '';
+      const query = filterText.toLowerCase().trim();
+
+      const filtered = phoneTrees.filter(item => {
+        const matchesCategory = (category === 'all' || item.category === category);
+        const matchesSearch = !query || 
+          item.name.toLowerCase().includes(query) || 
+          item.description.toLowerCase().includes(query) ||
+          item.phone.toLowerCase().includes(query) ||
+          item.speedShortcut.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+      } else {
+        noResults.classList.add('hidden');
+      }
+
+      filtered.forEach(tree => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-5 sm:p-6 transition-all shadow-lg space-y-4";
+        
+        let branchesHTML = '';
+        tree.branches.forEach(branch => {
+          const isHighlight = branch.highlight;
+          branchesHTML += `
+            <div class="relative pl-7 pb-3 border-l-2 ${isHighlight ? 'border-brand-500' : 'border-slate-800'} last:border-transparent last:pb-0">
+              <span class="absolute -left-[15px] top-0.5 w-7 h-7 rounded-lg ${isHighlight ? 'bg-brand-600 text-white ring-4 ring-brand-500/20' : 'bg-slate-800 text-slate-300 border border-slate-700'} font-bold flex items-center justify-center text-xs font-mono keycap-pill">
+                ${branch.key}
+              </span>
+              <div class="bg-slate-950/70 p-3 rounded-xl border ${isHighlight ? 'border-brand-500/40 bg-brand-950/10' : 'border-slate-800/80'}">
+                <div class="flex items-center justify-between flex-wrap gap-1">
+                  <span class="text-xs font-medium text-slate-200">${branch.dutch}</span>
+                  ${branch.type === 'urgent' ? '<span class="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/30">Emergency Only</span>' : ''}
+                  ${isHighlight ? '<span class="text-[10px] px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 font-bold border border-brand-500/40"><i class="fa-solid fa-star text-[9px] mr-1"></i>Expats Choice</span>' : ''}
+                </div>
+                <div class="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
+                  <i class="fa-solid fa-arrow-turn-down-right text-[10px] text-slate-500"></i>
+                  <span>${branch.english}</span>
+                </div>
+                ${branch.note ? `<div class="text-[11px] text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md mt-2 flex items-center gap-1.5"><i class="fa-solid fa-lightbulb text-amber-400"></i> ${branch.note}</div>` : ''}
+              </div>
+
+              ${branch.children ? `
+                <div class="mt-2.5 ml-4 pl-5 border-l-2 border-slate-800 space-y-2">
+                  ${branch.children.map(child => `
+                    <div class="relative pl-6">
+                      <span class="absolute -left-[13px] top-1 w-5 h-5 rounded bg-slate-800 border border-slate-700 text-brand-400 font-bold flex items-center justify-center text-[10px] font-mono">
+                        ${child.key}
+                      </span>
+                      <div class="bg-slate-950 p-2.5 rounded-lg border ${child.highlight ? 'border-brand-500/50 bg-brand-950/20' : 'border-slate-800/60'}">
+                        <div class="text-xs text-slate-200 font-medium">${child.dutch}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">${child.english}</div>
+                        ${child.note ? `<div class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded mt-1.5 font-medium">${child.note}</div>` : ''}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+
+        let tipsHTML = '';
+        if (tree.tips && tree.tips.length > 0) {
+          tipsHTML = `
+            <div class="bg-slate-950/90 rounded-xl p-3 border border-slate-800 space-y-1.5">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-brand-400"></i> Tactical Expat Notes:
+              </span>
+              <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                ${tree.tips.map(tip => `<li>${tip}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 class="text-lg font-bold text-white tracking-tight">${tree.name}</h4>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-medium uppercase tracking-wider">${tree.category}</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1 max-w-2xl">${tree.description}</p>
+            </div>
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <a href="tel:${tree.phone.replace(/[^0-9+]/g, '')}" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition-all">
+                <i class="fa-solid fa-phone text-xs"></i> ${tree.phone}
+              </a>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60 text-xs text-slate-300">
+            <div><span class="text-slate-500 font-medium">Hours:</span> <span class="font-semibold text-slate-200">${tree.hours}</span></div>
+            <div><span class="text-slate-500 font-medium">Fast Shortcut:</span> <span class="font-semibold text-dutchOrange-400">${tree.speedShortcut}</span></div>
+            ${tree.address ? `<div><span class="text-slate-500 font-medium">Address:</span> <span class="text-slate-200">${tree.address}</span></div>` : '<div><span class="text-slate-500 font-medium">Channel:</span> <span class="text-slate-200">National IVR</span></div>'}
+          </div>
+
+          <!-- Flowchart Steps -->
+          <div class="space-y-2 pt-1">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Interactive Branching Steps:</span>
+            <div class="pt-2">
+              ${branchesHTML}
+            </div>
+          </div>
+
+          ${tipsHTML}
+        `;
+        treesContainer.appendChild(card);
+      });
+    }
+
+    // Speech synthesis helper
+    function speakDutch(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'nl-NL';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+        showToast(`Playing Dutch audio: "${text}"`);
+      } else {
+        showToast("Speech synthesis not supported in this browser.");
+      }
+    }
+
+    // Copy to clipboard helper
+    function copyText(text, buttonElement) {
+      const tempInput = document.createElement("input");
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      showToast(`Copied "${text}" to clipboard`);
+      if (buttonElement) {
+        const origText = buttonElement.innerHTML;
+        buttonElement.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Copied!`;
+        setTimeout(() => {
+          buttonElement.innerHTML = origText;
+        }, 1500);
+      }
+    }
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-20');
+      }, 2500);
+    }
+
+    // Filter event listeners
+    let currentCategory = 'all';
+
+    catPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        catPills.forEach(p => {
+          p.classList.remove('bg-brand-600', 'text-white');
+          p.classList.add('bg-slate-800', 'text-slate-300');
+        });
+        pill.classList.remove('bg-slate-800', 'text-slate-300');
+        pill.classList.add('bg-brand-600', 'text-white');
+        currentCategory = pill.dataset.cat;
+        renderTrees(searchInput.value, currentCategory);
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      if (e.target.value.length > 0) {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+      renderTrees(e.target.value, currentCategory);
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      clearSearchBtn.classList.add('hidden');
+      renderTrees('', currentCategory);
+    });
+
+    // Practice Simulator Logic
+    function loadSimulatorScenario(index) {
+      const scenario = simScenarios[index];
+      simScenarioTitle.textContent = `Scenario ${index + 1}: ${scenario.title}`;
+      simProvider.textContent = scenario.provider;
+      simDutchText.textContent = `"${scenario.dutch}"`;
+      simGoalText.textContent = scenario.goal;
+      simFeedback.className = "min-h-[44px] flex items-center px-3 py-2 rounded-lg text-xs font-medium bg-slate-900/50 text-slate-400 border border-slate-800";
+      simFeedback.innerHTML = `<i class="fa-solid fa-hand-pointer mr-1.5 text-slate-500"></i> Press a button on the telephone keypad to answer.`;
+    }
+
+    function handleKeypadPress(key) {
+      const scenario = simScenarios[currentSimIndex];
+      simTotal++;
+      if (key === scenario.correctKey) {
+        simScore++;
+        simFeedback.className = "min-h-[44px] flex items-center px-3 py-2 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        simFeedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-sm mr-2"></i> ${scenario.explanation}`;
+      } else {
+        simFeedback.className = "min-h-[44px] flex items-center px-3 py-2 rounded-lg text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/40";
+        simFeedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-sm mr-2"></i> Incorrect (You selected ${key}). Look for: ${scenario.correctKey}. ${scenario.explanation}`;
+      }
+      simScoreBadge.textContent = `Score: ${simScore} / ${simTotal}`;
+    }
+
+    simNextBtn.addEventListener('click', () => {
+      currentSimIndex = (currentSimIndex + 1) % simScenarios.length;
+      loadSimulatorScenario(currentSimIndex);
+    });
+
+    simPlayAudio.addEventListener('click', () => {
+      const scenario = simScenarios[currentSimIndex];
+      speakDutch(scenario.dutch);
+    });
+
+    document.getElementById('sim-btn-nav').addEventListener('click', () => {
+      document.getElementById('simulator-section').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Submission Modal Handlers
+    submitTreeBtn.addEventListener('click', () => {
+      submitModal.classList.remove('hidden');
+    });
+    closeModalBtn.addEventListener('click', () => {
+      submitModal.classList.add('hidden');
+    });
+    cancelModalBtn.addEventListener('click', () => {
+      submitModal.classList.add('hidden');
+    });
+
+    submitTreeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('sub-name').value;
+      const cat = document.getElementById('sub-cat').value;
+      const phone = document.getElementById('sub-phone').value || "Standard Desk";
+      const steps = document.getElementById('sub-steps').value;
+
+      // Add to runtime state
+      phoneTrees.unshift({
+        id: 'user-' + Date.now(),
+        name: name,
+        category: cat,
+        phone: phone,
+        hours: "Standard Operating Hours",
+        speedShortcut: "User submitted shortcut",
+        description: "Community submitted phone tree update for expat community.",
+        branches: [
+          {
+            key: "★",
+            dutch: steps,
+            english: "Verified community navigation path",
+            type: "action",
+            highlight: true
+          }
+        ],
+        tips: ["Recently verified by fellow expat."]
+      });
+
+      renderTrees(searchInput.value, currentCategory);
+      submitModal.classList.add('hidden');
+      submitTreeForm.reset();
+      showToast("Thank you! Tree update registered in your local catalog.");
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    let isDark = true;
+
+    themeToggle.addEventListener('click', () => {
+      isDark = !isDark;
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        themeIcon.className = 'fa-solid fa-sun text-sm';
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.className = 'fa-solid fa-moon text-sm';
+      }
+    });
+
+    // Initial render
+    renderTrees();
+    loadSimulatorScenario(0);
+  </script>
+</body>
+</html>
